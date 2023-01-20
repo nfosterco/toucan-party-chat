@@ -4,7 +4,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import db, { getContacts } from './users';
-import User, { UserMessage, UserToken } from './User';
+import User from './User';
 
 const app = express();
 const server = http.createServer(app);

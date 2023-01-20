@@ -1,5 +1,6 @@
 
-import {UserToken, IUser, Contact} from './User';
+import { IUser } from './User';
+import { Contact, UserToken } from '../../sharedTypes';
 
 const db: Map<UserToken, IUser> = new Map();
 

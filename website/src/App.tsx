@@ -1,14 +1,10 @@
 import React from 'react';
-import './App.css';
 import { io } from "socket.io-client";
 
-const socket = io();
+import './App.css';
+import { Contact } from '../../sharedTypes';
 
-type UserToken = string;
-type Contact = {
-  token: UserToken;
-  userName: string;
-}
+const socket = io();
 
 function App() {
   

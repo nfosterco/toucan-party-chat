@@ -1,19 +1,6 @@
 import { Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-
-export type UserToken = string;
-
-export type UserMessage = {
-  from: UserToken;
-  to: UserToken;
-  message: string;
-  timestamp: number;
-}
-
-export type Contact = {
-  token: UserToken;
-  userName: string;
-}
+import { UserToken, UserMessage } from '../../sharedTypes'
 
 export interface IUser {
   getName(): string;
