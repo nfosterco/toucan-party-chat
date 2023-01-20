@@ -3,6 +3,9 @@ import path from 'path';
 import http from 'http';
 import { Server } from 'socket.io';
 
+import db, { getContacts } from './users';
+import User, { UserMessage, UserToken } from './User';
+
 const app = express();
 const server = http.createServer(app);
 const port = 3001;
@@ -23,5 +26,22 @@ app.get('*', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('connected!');
+
+  socket.on('user:new', (userName: string, callback) => {
+    // get current users to send back
+    
+    const user = new User(userName, socket);
+    
+    db.set(user.getToken(), user);
+    
+    console.log('user created: ' + userName);
+    
+    const contacts = getContacts();
+
+    // let other users know about new user
+    io.emit('users:toClient', contacts);
+
+    callback({ token: user.getToken() });
+  });
+
 })
