@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { io } from "socket.io-client";
+import { Grid, List, ListItem, ListItemButton } from '@mui/material';
+
 
 import './App.css';
 import { Contact, NewUserResponse, UserMessage, UserId } from './sharedTypes';
@@ -41,10 +43,11 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">        
       {
         !userId
         ?
+        <>
+        <img src="./toucan-party-chat.png" alt="Two toucans talking on an old fashioned string can telephone" height="200" width="200" />
         <SingleTextInput
           labelText="Welcome To Toucan Party Chat, What Is Your Name?"
           buttonText="Save"
@@ -58,34 +61,61 @@ function App() {
             }
           }
         />
+        </>
         :
-        <div>
-          Welcome {username}
-          <section>
+        <Grid container spacing="12">
+          <Grid item xs={12}>Welcome {username}</Grid>
+          <Grid item xs={Object.values(contacts).length ? 4 : 12}>
           {
             Object.values(contacts).length
             ?
             <>
             <h3>Contacts</h3>
-            <ul>
+            <List>
             {
               Object.values(contacts).map(contact => (
-                <li onClick={() => setSelectedContactId(contact.userId)}>
-                  {contact.userName}
-                </li>
+                <ListItem disablePadding sx={{borderBottom: 1, borderColor: "lightgray"}} onClick={() => setSelectedContactId(contact.userId)}>
+                  <ListItemButton>
+                    {contact.userName}
+                  </ListItemButton>
+                </ListItem>
               ))
             }
-            </ul>
+            </List>
             </>
             :
-            (<div>No contacts found :(</div>)
+            <Grid item xs={12}>
+              <p>
+                No contacts found.  <a href="http://localhost:3001/" target="_blank"> Click here to open another tab and get this party started!</a>
+              </p>
+            </Grid>
           }
-          </section>
-          <section>
+          </Grid>
+          <Grid item xs={8}>
           {
             selectedContact &&
             <>
             <h4>Chatting with {selectedContact.userName}</h4>
+            {
+              selectedContact.messages.length
+              ?
+              <List>
+              {
+                selectedContact.messages.map(({from, message, timestamp}) => (
+                  <ListItem
+                    sx={{
+                      backgroundColor: from === userId ? 'palegreen' : 'paleturquoise',
+                      borderRadius: 2,
+                      my: 2
+                    }} >
+                    {`${timestamp} - ${message}`}
+                  </ListItem>
+                ))
+              }
+              </List>
+              :
+              <div>"No Messages - Why not start the conversation?"</div>
+            }
             <SingleTextInput
               labelText=""
               buttonText="Send"
@@ -113,22 +143,11 @@ function App() {
                 }
               }
             />
-            {
-              selectedContact.messages.length &&
-              <ul>
-              {
-                selectedContact.messages.map(({message, timestamp}) => (
-                  <li>{`${timestamp} - ${message}`}</li>
-                ))
-              }
-              </ul>
-            }
             </>
           }
-          </section>
-        </div>
+          </Grid>
+        </Grid>
       }
-      </header>
     </div>
   );
 }
