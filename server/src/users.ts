@@ -1,17 +1,14 @@
 
 import { IUser } from './User';
-import { Contact, UserToken } from '../../sharedTypes';
+import { Contact, UserId } from './sharedTypes';
 
-const db: Map<UserToken, IUser> = new Map();
+const db: Map<UserId, IUser> = new Map();
 
 export function getContacts() {
-  const contacts: Contact[] = [];
+  const contacts: {[key: UserId]: Contact} = {};
 
-  db.forEach(contact => {
-    contacts.push({
-      token: contact.getToken(),
-      userName: contact.getName()
-    });
+  db.forEach(user => {
+    contacts[user.getUserId()] = user.toContact();
   });
 
   return contacts;

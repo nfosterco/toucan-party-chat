@@ -1,12 +1,13 @@
 import { Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { UserToken, UserMessage } from '../../sharedTypes'
+import { UserId, UserMessage, Contact } from './sharedTypes'
 
 export interface IUser {
   getName(): string;
-  getToken(): UserToken;
+  getUserId(): UserId;
   getSocket(): Socket;
-  getMessages(): Map<UserToken, UserMessage[]>;
+  getMessages(): Map<UserId, UserMessage[]>;
+  toContact(): Contact;
   addMessage(userMessage: UserMessage): void;
 }
 
@@ -14,18 +15,18 @@ export interface IUser {
 export default class User implements IUser {
   private name: string;
   private socket: Socket;
-  private token: UserToken;
-  private messages: Map<UserToken, UserMessage[]>;
+  private userId: UserId;
+  private messages: Map<UserId, UserMessage[]>;
 
   constructor(userName: string, socket: Socket) {
     this.name = userName;
     this.socket = socket;
-    this.token = uuidv4();
-    this.messages = new Map<UserToken, UserMessage[]>();
+    this.userId = uuidv4();
+    this.messages = new Map<UserId, UserMessage[]>();
   }
 
-  getToken() {
-    return this.token;
+  getUserId() {
+    return this.userId;
   }
 
   getSocket() {
@@ -51,5 +52,14 @@ export default class User implements IUser {
     }
 
     return userMessage;
+  }
+
+  toContact(): Contact {
+    const { userId, name } = this;
+    return {
+      userId,
+      userName: name,
+      messages: []
+    }
   }
 }

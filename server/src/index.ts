@@ -24,20 +24,17 @@ app.get('*', (req, res) => {
 io.on('connection', (socket) => {
 
   socket.on('user:new', (userName: string, callback) => {
-    // get current users to send back
-    
-    const user = new User(userName, socket);
-    
-    db.set(user.getToken(), user);
-    
-    console.log('user created: ' + userName);
-    
+    // get current contacts to send back to new user
     const contacts = getContacts();
 
-    // let other users know about new user
-    io.emit('users:toClient', contacts);
+    const user = new User(userName, socket);
+    db.set(user.getUserId(), user);
 
-    callback({ token: user.getToken() });
+    // send userId and contacts back to new user
+    callback({ userId: user.getUserId(), contacts });
+
+    // let other users know about new user
+    socket.broadcast.emit('user:new', user.toContact());
   });
 
 })
