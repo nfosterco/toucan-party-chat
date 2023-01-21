@@ -11,7 +11,6 @@ export interface IUser {
   addMessage(userMessage: UserMessage): void;
 }
 
-  
 export default class User implements IUser {
   private name: string;
   private socket: Socket;
