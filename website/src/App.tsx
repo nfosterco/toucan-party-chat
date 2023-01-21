@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 
 import './App.css';
 import { Contact, NewUserResponse, UserMessage, UserId } from './sharedTypes';
+import SingleTextInput from './SingleTextInput';
 
 const socket = io();
 
@@ -24,19 +25,20 @@ function App() {
           {
             !userId
             ?
-            <form>
-              <label htmlFor="name-input">Welcome To Toucan Party Chat, What Is Your Name?</label>
-              <input type="text" name="name-input" id="name-input" value={nameInput} onChange={e => setNameInput(e.target.value)}/>
-              <button onClick={(e) => {
-                e.preventDefault();
-                setUsername(nameInput);
-                socket.emit('user:new', nameInput, ({userId, contacts}: NewUserResponse) => {
-                  localStorage.setItem('partychat:userId', userId);
-                  setUserId(userId);
-                  setContacts(contacts);
-                });
-              }}>Save</button>
-            </form>
+            <SingleTextInput
+              labelText="Welcome To Toucan Party Chat, What Is Your Name?"
+              buttonText="Save"
+              action={
+                (input: string) => {
+                  setUsername(input);
+                  socket.emit('user:new', nameInput, ({userId, contacts}: NewUserResponse) => {
+                    localStorage.setItem('partychat:userId', userId);
+                    setUserId(userId);
+                    setContacts(contacts);
+                  });
+                }
+              }
+            />
             :
             <div>
               `Welcome {username}`
@@ -44,11 +46,18 @@ function App() {
                 {
                   Object.values(contacts).length
                   ?
-                  Object.values(contacts).map((contact) => (
-                    <div onClick={() => setActiveContact(contact)}>
-                      {contact.userName}
-                    </div>
-                  ))
+                  <>
+                  <h3>Contacts</h3>
+                  <ul>
+                  {
+                    Object.values(contacts).map(contact => (
+                      <li onClick={() => setActiveContact(contact)}>
+                        {contact.userName}
+                      </li>
+                    ))
+                  }
+                  </ul>
+                  </>
                   :
                   (<div>No contacts found :(</div>)
                 }
