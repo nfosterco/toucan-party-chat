@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 
 import db, { getContacts } from './users';
 import User from './User';
+import { UserMessage } from 'sharedTypes';
 
 const app = express();
 const server = http.createServer(app);
@@ -34,7 +35,15 @@ io.on('connection', (socket) => {
     callback({ userId: user.getUserId(), contacts });
 
     // let other users know about new user
-    socket.broadcast.emit('user:new', user.toContact());
+    socket.broadcast.emit('user:newToUser', user.toContact());
   });
 
+  socket.on('message:new', (userMessage: UserMessage) => {
+    const toUser = db.get(userMessage.to);
+
+    if (toUser) {
+      toUser.getSocket().emit('message:newToUser', userMessage);
+      toUser.addMessage(userMessage);
+    }
+  })
 })
